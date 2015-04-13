@@ -1,0 +1,80 @@
+body{
+	margin: 0 auto;
+	width: 1520px;
+	font-family: Arial;
+}
+#main{
+	margin: 0 auto;
+	width: 100%;
+}
+ #welcome{
+    padding: 5px;
+    width: 100%;
+    margin: 0 auto;
+ }	
+ header{
+ 	margin-top: 15px;
+ 	width: 90%;
+ 	height: 60px;
+ 	background-color: lightgrey;
+ }
+ .logo{
+ 	padding: 5px;
+ 	position: relative;
+ 	float: left;
+ 	width: auto;
+ 	margin: 0 auto;
+ }
+ .navbar{
+ 	margin: 0 auto;
+ 	padding: 10px;
+ 	float: left;
+ 	width: 74%;
+ }
+ .nav_elements, .divider, .logo{
+
+ 	font-size: 30px;
+ }
+ .divider{ 
+ 	color: grey;
+ }
+ .clear{
+ 	clear: both;
+ }
+ .billing_form{
+ 	width: 80%;
+ 	margin: 0 auto;
+
+ }
+ .index, .input{
+ 	padding: 10px;
+ 	float: left;
+ 	width: 10%;
+ 	font-size: 20px;
+ }
+ .index{
+ }
+ .input{
+ 	margin-left: 10px;
+ }
+ .hover{
+ 	display: none;
+ 	font-size: 18px;
+ 	border-style: solid;
+ 	border-color: grey;
+ 	border-radius: 5px;
+ 	width: 7%;	
+ 	padding: 5px;
+ 	background-color: lightgrey;
+ 	position: fixed;
+ 	margin-left: 210px;
+ }
+#customer:hover + .hover{
+	display: block;
+}
+.hover:hover{
+	display: block;
+}
+.hover_element{
+	text-align: center;
+}
