@@ -1,0 +1,48 @@
+<style>
+#welcome{
+	margin: 0 auto;
+}
+.customer_details_form{
+	width: 100%;
+}
+.index{
+	width: 15%;
+}
+.submit{
+	float: left;
+	padding: 5px;
+}
+</style>
+<div id="welcome">
+	<div class="customer_details_form">
+		<div class="index">Enter Customer Name: </div><div class="input"><input type="text" class="customer_name" /></div><input type="submit" value="Get Details" class="submit"/>
+		<div class="clear"></div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var all_details = [];
+	var customers_name = [];
+	var customers_id = [];
+	$.getJSON("/customer/get-all",{},function(data){
+		all_details = data;
+		$.each(data,function(key,val){
+			customers_name.push(val['name']);
+			customers_id.push(val['id']);
+		});
+	});
+	$(".customer_name").autocomplete({
+		source: customers_name
+	});
+	$(".submit").on("click",function(e){
+		var customer_name = 0;
+		e.preventDefault();
+		var customer_name = $(".customer_name").val();
+		$.each(all_details, function(key,val){
+			if(val['name'] == customer_name){
+				customer_id = val['id'];
+			}
+		})
+	})
+})
+</script>

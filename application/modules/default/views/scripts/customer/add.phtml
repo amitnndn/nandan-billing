@@ -1,13 +1,59 @@
 <div id="welcome">
 	<div class="billing_form">
 		<h2>Enter Customer Details Here</h2>
-		<div class="index">Name:</div><div class="input"><input type="text" class="customer_name" /></div>
+		<div class="index">Name*:</div><div class="input"><input type="text" class="customer_name" /></div>
 		<div class="clear"></div>
-		<div class="index">Contact No.:</div><div class="input"><input type="text" class="contact_no" /></div>
+		<div class="index">Contact No.*:</div><div class="input"><input type="text" class="contact_no" /></div>
 		<div class="clear"></div>
 		<div class="index">Address</div><div class="input"><textarea class="cust_address"></textarea></div>
 		<div class="clear"></div>
-		<div class="index"></div><div class="input"><input type="submit" value="Add Customer" /></div>
+		<div class="index">Balance*:</div><div class="input last"><small>Rs.</small>&nbsp;<input type="text" class="balance" /></div>
+		<div class="clear"></div>
+		<div class="index"></div><div class="input"><input class="submit" type="submit" value="Add Customer" /></div><div class="error">All fields with * are cumpulsory</div>  
 		<div class="clear"></div>
 	</div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var array = [];
+	$(".balance").on("change",function(){
+			balance = $(".balance").val();
+			array = commaSeparateNumber(balance);
+			$(".balance").val(array["new_val"]);
+	});
+	$(".submit").on("click",function(e){
+		e.preventDefault();
+		var name = $(".customer_name").val();
+		var contact = $(".contact_no").val();
+		var addr = $(".cust_address").val();
+		var balance = $(".balance").val();
+		if(name == null || contact == null || name == "" || contact == "" || name.length == 0 || contact.length == 0 || balance.length == 0){
+			$(".error").show();
+			return;
+		}
+		else if(contact.length < 10){
+			$(".error").html("Contact number is invalid.");
+			$(".error").show();
+			return;
+		}
+		else{
+			$(".error").hide();
+		}
+
+		$.post("/customer/post",{name : name, contact_no : contact, address : addr, balance :array["old_val"] },function(data){
+			alert(data);
+		})
+	})
+	function commaSeparateNumber(val){
+		old_val = val;
+	    while (/(\d+)(\d{3})/.test(val.toString())){
+	      val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+	    }
+	    var return_array = [];
+	    return_array["old_val"] = old_val;
+	    return_array["new_val"] = val;
+	    return return_array;
+	}
+})
+
+</script>

@@ -78,3 +78,19 @@ body{
 .hover_element{
 	text-align: center;
 }
+.error{
+	display: none;
+	float: left;
+	color: red;
+	font-size: 12px;
+	margin-left: 5px;
+	padding: 10px;
+	margin-top: 10px;
+}
+.last{
+	width: 40%;
+}
+#ui-datepicker-div{
+	font-size: 12px !important;
+	width: 17em !important;
+}

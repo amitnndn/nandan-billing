@@ -1,23 +1,96 @@
+<style>
+.error{
+	margin-left: -35px;
+}
+</style>
 <div id="welcome"> 
 	<div class="billing_form">
 		<h2>Please enter the bill details below</h2>
-		<div class="index">Name:</div><div class="input"><input type="text" class="customer_name" /></div>
+		<div class="index">Name:</div><div class="input"><input type="text" class="customer_name" />
+			<input type="number" class="customer_id" hidden/>
+		</div>
 		<div class="clear"></div>
 		<div class="index">Date:</div><div class="input"><input type="date" class="bill_date" /></div>
 		<div class="clear"></div>
 		<div class="index">Bill Type:</div><div class="input">
 			<select class="bill_type">
-				<option value=0>Select a bill type</option>
-				<option value=1>Debit (Cash Received)</option>
-				<option value=2>Credit (Goods Purchased)</option>
-				<option value=2>Cash</option>
+				<?php
+					echo $this->select;
+				?>
 			</select>
 		</div>
 		<div class="clear"></div>
-		<div class="index">Amount:</div><div class="input"><input type="number" class="amount" /></div>
+		<div class="index">Amount:</div><div class="input"><input type="text" class="amount" /></div>
 		<div class="clear"></div>
-		<div class="index">Description:</div><div class="input"><textarea class="desc"></textarea>
+		<div class="index">Description:</div><div class="input"><textarea class="desc"></textarea></div>
 		<div class="clear"></div>
-		<div class="index"></div><div class="input"><input type="submit" value="Submit" /></div>
+		<div class="index"></div><div class="input"><input type="submit" value="Submit" class="submit"/></div><div class="error">All fields with * are cumpulsory</div>
 	</div>
 </div>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	var customers_name = [];
+	var customers_id = [];
+	var all_details;
+	$.getJSON("/customer/get-all",{},function(data){
+		all_details = data;
+		$.each(data,function(key,val){
+			console.log(val['id']);
+			customers_name.push(val['name']);
+			customers_id.push(val['id']);
+		});
+	});
+	$(".customer_name").autocomplete({
+		source : customers_name
+	});
+	var amount = [];
+	$(".amount").on("change",function(){
+		var value = $(".amount").val();
+		amount = commaSeparateNumber(value);
+		$(".amount").val(amount['new_val']);
+})
+	$(".bill_date").datepicker({
+		dateFormat : 'yy-mm-dd'
+	});
+	$(".submit").on("click",function(e){
+		e.preventDefault();
+		var name = $(".customer_name").val();
+		var paid_amount = amount["old_val"];
+		var desc = $(".desc").val();
+		var transaction_type = $(".bill_type").val();
+		var date = $(".bill_date").val();
+		var customer_id = 0;
+		$.each(all_details, function(key,val){
+			if(val['name'] === name){
+				customer_id = val['id'];
+			}
+		});
+		if(customer_id == null || customer_id == 0 || typeof customer_id == "undefined"){
+			$(".error").html("Invalid Customer Name");
+			$(".error").show();
+			return;
+		}
+		if(paid_amount == null || paid_amount.length == 0 || transaction_type == 0 || date.length == 0 || date == null){
+			$(".error").html("All fields marked with * are cumpulsory");
+			$(".error").show();
+			return;
+		}
+		$.post("/billing/post",{customer_id : customer_id, transaction_type : transaction_type, amount : paid_amount, date : date, desc : desc }, function(data){
+
+		})
+
+	})
+	function commaSeparateNumber(val){
+		old_val = val;
+	    while (/(\d+)(\d{3})/.test(val.toString())){
+	      val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+	    }
+	    var return_array = [];
+	    return_array["old_val"] = old_val;
+	    return_array["new_val"] = val;
+	    return return_array;
+	}
+})
+
+</script>
