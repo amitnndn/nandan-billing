@@ -41,7 +41,15 @@ $(document).ready(function(){
 		}
 
 		$.post("/customer/post",{name : name, contact_no : contact, address : addr, balance :array["old_val"] },function(data){
-			alert(data);
+			if(data === "TRUE"){
+				alert("Customer successfully created");
+				$("input").val("");
+				$("textarea").val("");
+				$(".submit").val("Add Customer");
+			}
+			else{
+				alert("Something went wrong. Please try again");
+			}
 		})
 	})
 	function commaSeparateNumber(val){

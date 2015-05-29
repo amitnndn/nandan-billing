@@ -4,20 +4,126 @@
 }
 .customer_details_form{
 	width: 100%;
+	display: flex;
+	justify-content: center;
 }
 .index{
 	width: 15%;
+	padding-right: 0px !important;
 }
 .submit{
 	float: left;
+	margin-top: 10px;
+}
+#trans_details{
+	display: none;
+}
+tbody{
+	text-align: center;
+}
+.custumer_details{
+	font-size: 25px;
+	width: 100%;
+	margin: 0 auto;
 	padding: 5px;
+	margin-bottom: 40px;
+	display: flex;
+	justify-content: center;
+	margin-top: 15px;
+}
+.name, .contact_no, .balance{
+	display: none;
+	float: left;
+	margin-left: 10px;
+	background-color: lightgrey;
+	border-style: solid;
+	border-radius: 5px;
+	border-width: 3px;
+	padding: 5px;
+}
+h2{
+	display: none;
+	text-align: center;
+}
+form{
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+.input{
+	padding-left: 0px !important;
+}
+.transaction_update, .helper_text{
+	width: 100%;
+	text-align: center;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.input1{
+	width: 18%;
+	float:left;
+}
+.ui-datepicker-header table{
+	display: block;
 }
 </style>
 <div id="welcome">
 	<div class="customer_details_form">
+		<form>
 		<div class="index">Enter Customer Name: </div><div class="input"><input type="text" class="customer_name" /></div><input type="submit" value="Get Details" class="submit"/>
+		</form>
 		<div class="clear"></div>
 	</div>
+	<div class="custumer_details">
+	<span class="name">Name:&nbsp;<span class="name_pre"></span></span>
+	<span class="contact_no">Contact No.:&nbsp;<span class="contact_no_pre"></span></span>
+	<span class="balance">Balance:&nbsp;Rs.&nbsp;<span class="balance_pre"></span></span>
+	<div class="clear"></div>
+	</div>
+	<h2>Transaction History</h2>
+	<div class="helper_text">
+		<div class="input1" style="width: 221px;">Date</div>
+		<div class="input1" style="width: 219px;">Amount</div>
+		<div class="input1" style="width: 367px;">Transaction Type</div>
+		<div class="input1" style="width: 270px;">Description</div>
+		<div class="clear"></div>
+	</div>
+	<div class="transaction_update">
+		<div class="input1" style="width: 221px;"><input type="date" class="bill_date"/></div>
+		<div class="input1" style="width: 219px;"><input type="text" class="amount"/></div>
+		<div class="input1" style="width: 367px;"><select class="transaction_type">
+			<option value="0" selected="true">Choose a transaction</option>
+			<option value="1">Credit</option>
+			<option value="2">Debit</option>
+			<option value="3">Cash</option>
+			</select>
+		</div>
+		<div class="input1" style="width: 270px;"><input type="text" class="description"></div>
+		<div class="input1"><input type="submit" value="Add" class="submit"></div>
+		<div class="clear"></div>
+	</div>
+	<table id="trans_details" class="display" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Amount</th>
+				<th>Transaction Type</th>
+				<th>Description</th>
+				<th>Balance</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th>Date</th>
+				<th>Amount</th>
+				<th>Transaction Type</th>
+				<th>Description</th>
+				<th>Balance</th>
+				<th>Action</th>
+			</tr>
+		</tfoot>
+	</table>
 </div>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -28,21 +134,50 @@ $(document).ready(function(){
 		all_details = data;
 		$.each(data,function(key,val){
 			customers_name.push(val['name']);
-			customers_id.push(val['id']);
 		});
 	});
 	$(".customer_name").autocomplete({
 		source: customers_name
 	});
 	$(".submit").on("click",function(e){
+		$(".name").show();
+		$(".contact_no").show();
+		$(".balance").show();
+		$("h2").show();
 		var customer_name = 0;
 		e.preventDefault();
 		var customer_name = $(".customer_name").val();
 		$.each(all_details, function(key,val){
 			if(val['name'] == customer_name){
 				customer_id = val['id'];
+				customer_phone_number = val['contact_no'];
 			}
-		})
+		});
+		$(".name_pre").html(customer_name);
+		$(".contact_no_pre").html(customer_phone_number);
+		$.get("/billing/get-balance",{ id : customer_id}, function(data){
+			$(".balance_pre").html(data);
+		});
+		var ajax_string = "/customer/test?id="+customer_id;
+		generate_table(ajax_string);
 	})
+	function generate_table(ajax_string){
+		$("#trans_details").dataTable().fnDestroy();
+		$("#trans_details").show();
+		$("#trans_details").dataTable({
+			"ajax" : ajax_string,
+			"columns" : [
+				{ "data" : "date" },
+				{ "data" : "amount" },
+				{ "data" : "transaction_type" },
+				{ "data" : "desc" },
+				{ "data" : "balance" },
+				{ "data" : "action" }
+			]
+		});
+	}
+	$(".bill_date").datepicker({
+		dateFormat : 'yy-mm-dd'
+	});
 })
 </script>
